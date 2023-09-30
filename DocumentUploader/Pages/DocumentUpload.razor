@@ -1,0 +1,125 @@
+﻿@page "/document-upload"
+@using DocumentUploader.Data
+
+<h3>Document Upload</h3>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="mb-3">
+                <label for="fileInput" class="form-label">Choose File(s)</label>
+                <InputFile id="fileInput" OnChange="@OnFileUpload" multiple class="form-control" />
+            </div>
+            <div class="mb-3">
+                <h4>Add File Information</h4>
+                <label for="descriptionInput" class="form-label">Description:</label>
+                <input id="descriptionInput" @bind="_fileDescription" class="form-control form-control-sm" />
+
+                <label for="labelInput" class="form-label">Label:</label>
+                <input id="labelInput" @bind="_fileLabel" class="form-control form-control-sm" />
+                
+                <button @onclick="SaveFile" class="btn btn-primary btn-sm mt-3">Save</button>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div>
+                <p><strong>File List</strong></p>
+                @if (_fileInfos.Any())
+                {
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Label</th>
+                                <th>Size (KB)</th>
+                                <th>Type</th>
+                                <th>Link</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var fileInfo in _fileInfos)
+                            {
+                                <tr>
+                                    <td>@fileInfo.Name</td>
+                                    <td>@fileInfo.Description</td>
+                                    <td>@fileInfo.Label</td>
+                                    <td>@fileInfo.SizeInKb</td>
+                                    <td>@fileInfo.Type</td>
+                                    <td>@fileInfo.Link</td>
+                                    <td>
+                                        <button @onclick="() => EditFile(fileInfo)" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i> Edit</button>
+                                        <button @onclick="() => DeleteFile(fileInfo)" class="btn btn-danger btn-sm ml-1"><i class="bi bi-trash"></i> Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+            <button @onclick="ClearFileList" class="btn btn-secondary btn-sm">Clear File List</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly List<FileUploadInfo> _fileInfos = new();
+    private List<IBrowserFile> _uploadedFiles = new();
+    
+    private string _fileDescription;
+    private string _fileLabel;
+    private string _fileLink;
+
+    private async Task OnFileUpload(InputFileChangeEventArgs e)
+    {
+        _uploadedFiles = e.GetMultipleFiles().ToList();
+    }
+
+    private void SaveFile()
+    {
+        foreach (var file in _uploadedFiles)
+        {
+            var fileInfo = new FileUploadInfo
+            {
+                Name = file.Name,
+                SizeInKb = file.Size / 1024,
+                Type = file.ContentType,
+                Description = _fileDescription,
+                Label = _fileLabel,
+                Link = _fileLink
+            };
+
+            _fileInfos.Add(fileInfo);
+        }
+
+        // Clear input fields after saving
+        _fileDescription = string.Empty;
+        _fileLabel = string.Empty;
+        _fileLink = string.Empty;
+    }
+
+    private void ClearFileList()
+    {
+        _fileInfos.Clear();
+    }
+    
+    private void EditFile(FileUploadInfo fileInfo)
+    {
+        // Handle edit functionality here
+        // For simplicity, you can set the current values in the input fields
+        _fileDescription = fileInfo.Description;
+        _fileLabel = fileInfo.Label;
+        _fileLink = fileInfo.Link;
+
+        // Remove the file entry from the list
+        _fileInfos.Remove(fileInfo);
+    }
+
+    private void DeleteFile(FileUploadInfo fileInfo)
+    {
+        // Handle delete functionality here
+        _fileInfos.Remove(fileInfo);
+    }
+
+}

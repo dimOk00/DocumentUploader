@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentUploader", "DocumentUploader\DocumentUploader.csproj", "{624582FF-4864-474A-B394-99BD0897541C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{624582FF-4864-474A-B394-99BD0897541C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{624582FF-4864-474A-B394-99BD0897541C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{624582FF-4864-474A-B394-99BD0897541C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{624582FF-4864-474A-B394-99BD0897541C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

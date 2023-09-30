@@ -1,8 +1,18 @@
+using Azure.Identity;
+using Microsoft.Extensions.Azure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddAzureClients(azureBuilder =>
+{
+    azureBuilder.UseCredential(new DefaultAzureCredential());
+    
+    var connectionString = builder.Configuration.GetSection("Storage").GetValue<string>("ConnectionString");
+    azureBuilder.AddBlobServiceClient(connectionString: connectionString);
+});
 
 var app = builder.Build();
 

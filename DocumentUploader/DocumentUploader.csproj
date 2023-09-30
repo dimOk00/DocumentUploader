@@ -13,5 +13,10 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Azure.Storage.Blobs" Version="12.18.0" />
+      <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.0" />
+    </ItemGroup>
+
 
 </Project>

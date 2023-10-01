@@ -5,6 +5,7 @@ riderModule.iml
 /_ReSharper.Caches/
 DocumentUploader/appsettings.Development.json
 .idea/
-/.vs/DocumentUploader/FileContentIndex
-/.vs/DocumentUploader/FileContentIndex/7c64c172-bcc3-424a-9ac0-fb6b06414ae1.vsidx
+.vs/
 /appSettings.Development.json
+/.vs/DocumentUploader/FileContentIndex/f94478df-b602-40af-86ca-f0ddb571ca41.vsidx
+/.vs/DocumentUploader/v17/.suo

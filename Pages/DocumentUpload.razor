@@ -16,10 +16,10 @@
             <div class="mb-3">
                 <h4>Add File Information</h4>
                 <label for="descriptionInput" class="form-label">Description:</label>
-                <input id="descriptionInput" @bind="_fileDescription" class="form-control form-control-sm" />
+                <input id="descriptionInput" @bind="_editFile.Description" class="form-control form-control-sm" />
 
                 <label for="labelInput" class="form-label">Label:</label>
-                <input id="labelInput" @bind="_fileLabel" class="form-control form-control-sm" />
+                <input id="labelInput" @bind="_editFile.Label" class="form-control form-control-sm" />
                 <button @onclick="SaveFile" class="btn btn-primary btn-sm mt-3" disabled="@_isSaving">
                     @if (_isSaving)
                     {
@@ -85,11 +85,11 @@
 </div>
 
 @code {
-    [Inject]
-    public BlobServiceClient BlobServiceClient { get; set; }
+        [Inject]
+        public BlobServiceClient BlobServiceClient { get; set; } = default!;
 
-    [Inject]
-    public CosmosService CosmosClient { get; set; }
+        [Inject]
+        public CosmosService CosmosClient { get; set; } = default!;
 
     private const string Container = "documents";
 
@@ -99,9 +99,7 @@
 
     private List<IBrowserFile> _uploadedFiles = new();
 
-    private string _fileDescription;
-    private string _fileLabel;
-    private string _fileLink;
+    private File _editFile = new();
 
     private bool _isSaving;
     private string _errorMessage = string.Empty;
@@ -127,7 +125,6 @@
 
         await foreach (var page in blobs.AsPages())
         {
-           
             var blobsPage = page.Values;
             foreach (var blob in blobsPage)
             {
@@ -141,7 +138,7 @@
                         SizeInKb = blob.Properties.ContentLength ?? 0 / 1024,
                         Type = blob.Properties.ContentType,
                         Description = metadata?.Description ?? string.Empty,
-                        Label = metadata?.Label ?? string.Empty
+                        Label = metadata?.Label ?? string.Empty,
                     };
 
                 _fileInfos.Add(fileInfo);
@@ -163,18 +160,20 @@
         {
             var fileInfo = new File
                 {
+                    Id = _editFile.Id,
                     Name = file.Name,
                     SizeInKb = file.Size / 1024,
                     Type = file.ContentType,
-                    Description = _fileDescription,
-                    Label = _fileLabel,
-                    Link = _fileLink
+                    Description = _editFile.Description,
+                    Label = _editFile.Label,
+                    Link = _editFile.Link,
                 };
 
             try
             {
+
                 await SaveFileToBlobStorage(file, fileInfo);
-                await CosmosClient.AddFileMetadata(fileInfo);
+                await CosmosClient.SaveFileMetadata(fileInfo);
                 _fileInfos.Add(fileInfo);
             }
             catch (Exception e)
@@ -188,9 +187,7 @@
         }
 
         // Clear input fields after saving
-        _fileDescription = string.Empty;
-        _fileLabel = string.Empty;
-        _fileLink = string.Empty;
+        _editFile = new File();
     }
 
     private void ClearFileList()
@@ -198,16 +195,11 @@
         _fileInfos.Clear();
     }
 
-    private void EditFile(File fileInfo)
+    private void EditFile(File file)
     {
-        // Handle edit functionality here
-        // For simplicity, you can set the current values in the input fields
-        _fileDescription = fileInfo.Description;
-        _fileLabel = fileInfo.Label;
-        _fileLink = fileInfo.Link;
+        _editFile = file;
 
-        // Remove the file entry from the list
-        _fileInfos.Remove(fileInfo);
+        _fileInfos.Remove(file);
     }
 
     private async Task DeleteFile(File fileInfo)
@@ -235,7 +227,11 @@
 
         var blobName = file.Name;
         var blobClient = _containerClient.GetBlobClient(blobName);
- 
+        if (await blobClient.ExistsAsync())
+        {
+            return;
+        }
+
         await using (var stream = file.OpenReadStream())
         {
             await blobClient.UploadAsync(stream, true);
@@ -247,7 +243,7 @@
         });
 
         // TODO: change to invoke azure function to get sas token
-        fileInfo.Link = blobClient.Uri.ToString();
+        // fileInfo.Link = blobClient.Uri.ToString();
     }
 
 }

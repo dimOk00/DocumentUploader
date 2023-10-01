@@ -45,22 +45,13 @@ namespace DocumentUploader.Services
             return result;
         }
 
-        public async Task AddFileMetadata(FileMetadata file)
+        public async Task SaveFileMetadata(FileMetadata file)
         {
             await Initialize();
 
-            await _container.CreateItemAsync(file, new PartitionKey(file.Id));
+            await _container.UpsertItemAsync(file, new PartitionKey(file.Id));
 
         }
-
-
-        public async Task UpdateFileMetadata(FileMetadata file)
-        {
-            await Initialize();
-
-            await _container.UpsertItemAsync(file);
-
-         }
 
         public async Task DeleteFileMetadata(FileMetadata file)
         {

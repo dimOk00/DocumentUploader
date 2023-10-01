@@ -1,4 +1,6 @@
 using Azure.Identity;
+using DocumentUploader.Services;
+
 using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,11 +10,13 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddAzureClients(azureBuilder =>
 {
-    azureBuilder.UseCredential(new DefaultAzureCredential());
     
-    var connectionString = builder.Configuration.GetSection("Storage").GetValue<string>("ConnectionString");
-    azureBuilder.AddBlobServiceClient(connectionString: connectionString);
+    var storageAccountConnectionString = builder.Configuration.GetSection("Storage").GetValue<string>("ConnectionString");
+    
+    azureBuilder.AddBlobServiceClient(connectionString: storageAccountConnectionString);
 });
+
+builder.Services.AddSingleton<CosmosService>();
 
 var app = builder.Build();
 

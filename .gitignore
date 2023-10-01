@@ -7,3 +7,4 @@ DocumentUploader/appsettings.Development.json
 .idea/
 /.vs/DocumentUploader/FileContentIndex
 /.vs/DocumentUploader/FileContentIndex/7c64c172-bcc3-424a-9ac0-fb6b06414ae1.vsidx
+/appSettings.Development.json
